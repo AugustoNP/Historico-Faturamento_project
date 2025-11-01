@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.13.3-blue)
 ![pandas](https://img.shields.io/badge/pandas-2.1.1-orange)
 ![openpyxl](https://img.shields.io/badge/openpyxl-3.1.2-red)
-![glob](https://img.shields.io/badge/glob-builtin-lightgrey)
+
 
 ---
 
