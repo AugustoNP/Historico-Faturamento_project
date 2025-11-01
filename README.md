@@ -32,7 +32,7 @@
 Repository for the billing history of **ISM GOMES DE MATTOS**, covering the years **2024** and **2025**.  
 
 This is a **public version** of the README, with all sensitive data removed.  
-All mentions of units or billing data are for educational purposes only.
+All mentions of units or billing data are for educational and demonstrative purposes only.
 
 The billing includes:
 - All **UFC** RUs in Fortaleza  
@@ -90,8 +90,13 @@ historico-faturamento/
         └── tabela_parsing_df-v3.xlsx
 ```
 
+#### Standard Template Table
+```
+C:\historico-faturamento\Planning\example_File\tabela_parsing_df-v3.xlsx
+```
+
 > [!CAUTION]
-> Keep this structure consistent — otherwise scripts won’t locate the classification table.
+> **Keep this structure consistent** — otherwise scripts won’t locate the classification table!
 
 #### Example Paths
 Input:
@@ -108,6 +113,8 @@ C:\historico-faturamento\Output\HRN\HRN_output.xlsx
 ```
 C:\historico-faturamento
 ```
+> [!WARNING]
+> Always keep this folder name consistent to prevent path errors in unit scripts.
 
 #### Input and Output Behavior
 - `\Input`: manually created  
@@ -125,6 +132,9 @@ os.makedirs(output_base_dir, exist_ok=True)
 - Month: `1-`  
 - Start Date: `2023_15_12`  
 - End Date: `2024_14_1`
+
+> [!CAUTION]
+> Avoid leading zeros — use `2024_1_2`, not `2024_01_02`.
 
 #### File Naming Convention
 ```
@@ -175,6 +185,10 @@ To add a new competence period:
 3. Follow naming conventions.  
 4. Run the script and review output.
 
+> [!NOTE]
+> Example competence folders are available in:  
+> `C:\historico-faturamento\Planning\CompfileStructure\2025`
+
 ---
 
 ### Scripts
@@ -189,18 +203,19 @@ Simpler units process quickly; others require complex parsing and validation log
 ### Visão Geral
 Repositório para histórico de faturamento da **ISM GOMES DE MATTOS**, referente aos anos **2024** e **2025**.  
 
-Versão **pública** do README, sem qualquer dado confidencial.  
-Todas as menções a unidades ou faturamento têm finalidade **educativa**.
+Esta é uma versão **pública** do README, com todos os dados sensíveis removidos.  
+Todas as menções a unidades ou faturamento são apenas **para fins educacionais**.
 
-O projeto lê várias tabelas, consolida em um formato padronizado, classifica e corrige inconsistências.
-
-Inclui:
+O faturamento inclui:
 - Todos os RUs da **UFC** em Fortaleza  
 - O **HGF** (Hospital Geral de Fortaleza)  
 - O **IJF** (Instituto Doutor José Frota)  
 - Diversas **UPAs**  
-- **UFPB** e **UNB**  
-- E aproximadamente *33 outras* unidades, principalmente hospitais e universidades federais
+- **UFPB** (Universidade Federal da Paraíba)  
+- **UNB** (Universidade de Brasília)  
+- E aproximadamente *33 outras* unidades, principalmente hospitais e universidades federais.
+
+O projeto lê múltiplas tabelas, consolida em formato padronizado, classifica e corrige inconsistências.
 
 ---
 
@@ -245,40 +260,68 @@ historico-faturamento/
         └── tabela_parsing_df-v3.xlsx
 ```
 
+#### Tabela Padrão / Modelo
+```
+C:\historico-faturamento\Planning\example_File\tabela_parsing_df-v3.xlsx
+```
+
 > [!CAUTION]
-> Mantenha a estrutura de pastas consistente — caso contrário, os scripts não localizarão a tabela de classificação.
+> Mantenha esta estrutura consistente — caso contrário, os scripts não localizarão a tabela de classificação.
 
----
+#### Exemplos de Paths
+Input:
+```
+C:\historico-faturamento\Input\HRN\2024\1-2023_15_12_2024_14_1\CR_HRN_2023_15_12_2024_14_1.xlsx
+```
 
-### Padrões de Nomeação
+Output:
+```
+C:\historico-faturamento\Output\HRN\HRN_output.xlsx
+```
 
-- Evite zeros à esquerda nas datas (`2024_1_2`, não `2024_01_02`)  
-- Mantenha os nomes de pastas e arquivos consistentes
+#### Diretório Base
+```
+C:\historico-faturamento
+```
+> [!WARNING]
+> Mantenha este nome de pasta consistente para evitar erros nos scripts das unidades.
 
-#### Pasta de Competência
+#### Comportamento de Input e Output
+- `\Input`: criado manualmente  
+- `\Output`: somente a pasta raiz deve existir — subpastas são criadas automaticamente
+
+```python
+output_base_dir = r"C:\historico-faturamento\Output\HRN"
+os.makedirs(output_base_dir, exist_ok=True)
+```
+
+#### Nomeação da Pasta de Competência
 ```
 1-2023_15_12_2024_14_1
 ```
 - Mês: `1-`  
-- Início: `2023_15_12`  
-- Fim: `2024_14_1`
+- Data Inicial: `2023_15_12`  
+- Data Final: `2024_14_1`
 
-#### Arquivo de Entrada
+> [!CAUTION]
+> Evite zeros à esquerda — use `2024_1_2`, não `2024_01_02`.
+
+#### Convenção de Nomes de Arquivo
 ```
 CR_HRN_2023_15_12_2024_14_1.xlsx
 ```
-- **CR** → Classificação  
-- **HRN** → Unidade  
-- **2023_15_12** → Data início  
-- **2024_14_1** → Data fim  
-- **.xlsx** → Extensão
+- **CR** → classificação do arquivo  
+- **HRN** → unidade  
+- **2023_15_12** → data de início  
+- **2024_14_1** → data de término  
+- **.xlsx** → extensão
 
 ---
 
 ### Por Que a Nomeação é Importante
 
-Os scripts extraem metadados **dos nomes dos arquivos e não do conteúdo das planilhas**, porque a informação dentro dos arquivos muitas vezes é **inconsistente ou ausente**.  
-Isso garante **padronização e confiabilidade** durante todo o processamento.
+Os scripts extraem **metadados dos nomes de arquivos e não do conteúdo dos documentos**.  
+Isso ocorre porque os dados dentro dos arquivos frequentemente estão **inconsistentes ou ausentes**, e usar os nomes garante uma referência **padronizada e confiável**.
 
 Exemplo de construção da tabela de referência:
 ```python
@@ -291,16 +334,37 @@ tab = tab[tab[5] == "2024"].sort_values(by=6)
 tab = pd.concat([tab, selectedrows], axis=0)
 ```
 
-Define:
+Os nomes determinam:
 - Ordem cronológica  
-- Atribuição de competência  
+- Atribuição do período de competência  
 - Controle de iteração (`tabIteration`)  
 
-Exemplo de extração de competência:
+Exemplo de extração da competência:
 ```python
 comp_inicio = f"{tab.iloc[int(tabIteration), 16]}/{yearMonths[(int(tab.iloc[tabIteration, 17])-1)].upper()} de {tab.iloc[tabIteration, 15]}"
-comp_fim = f"{tab.iloc[int(tabIteration), 19]}/{yearMonths[(int(tab.iloc[tabIteration
+comp_fim = f"{tab.iloc[int(tabIteration), 19]}/{yearMonths[(int(tab.iloc[tabIteration, 20])-1)].upper()} de {tab.iloc[tabIteration, 18]}"
+```
 
+---
+
+### Adicionando Novos Meses
+
+Para adicionar um novo período de competência:
+1. Crie a pasta para o novo mês (e ano, se necessário).  
+2. Coloque o arquivo `.xlsx` dentro.  
+3. Siga as convenções de nomenclatura.  
+4. Execute o script e revise o output.
+
+> [!NOTE]
+> Exemplos de pastas de competência estão disponíveis em:  
+> `C:\historico-faturamento\Planning\CompfileStructure\2025`
+
+---
+
+### Scripts
+
+Cada unidade possui um script Python dedicado devido às diferenças estruturais entre as tabelas.  
+Unidades simples processam rapidamente; outras exigem parsing e validações mais complexas.
 
 
 
