@@ -246,61 +246,6 @@ xlrd 2.0.1
 
 numpy 2.2.5
 
-##### Lista completa de pkg
-<span style="font-size: 0.5em;">
-anyio                   4.9.0
-<br>asttokens               3.0.0
-<br>certifi                 2025.4.26
-<br>colorama                0.4.6
-<br>comm                    0.2.2
-<br>debugpy                 1.8.15
-<br>decorator               5.2.1
-<br>defusedxml              0.7.1
-<br>distro                  1.9.0
-<br>et_xmlfile              2.0.0
-<br>executing               2.2.0
-<br>fuzzywuzzy              0.18.0
-<br>googletrans             4.0.2
-<br>h11                     0.16.0
-<br>h2                      4.2.0
-<br>hpack                   4.1.0
-<br>httpcore                1.0.9
-<br>httpx                   0.28.1
-<br>hyperframe              6.1.0
-<br>idna                    3.10
-<br>ipykernel               6.29.5
-<br>ipython                 9.4.0
-<br>ipython_pygments_lexers 1.1.1
-<br>jedi                    0.19.2
-<br>jupyter_client          8.6.3
-<br>jupyter_core            5.8.1
-<br>matplotlib-inline       0.1.7
-<br>nest-asyncio            1.6.0
-<br>numpy                   2.2.5
-<br>odfpy                   1.4.1
-<br>openpyxl                3.1.5
-<br>packaging               25.0
-<br>pandas                  2.2.3
-<br>parso                   0.8.4
-<br>pip                     25.1.1
-<br>platformdirs            4.3.8
-<br>prompt_toolkit          3.0.51
-<br>psutil                  7.0.0
-<br>pure_eval               0.2.3
-<br>Pygments                2.19.
-2<br>python-dateutil         2.9.0.post0
-<br>pytz                    2025.2
-<br>pywin32                 311
-<br>pyzmq                   27.0.0
-<br>six                     1.17.0
-<br>sniffio                 1.3.1
-<br>stack-data              0.6.3
-<br>tabula-py               2.10.0
-<br>tornado                 6.5.1
-<br>traitlets               5.14.3
-<br>tzdata                  2025.2
-<br>wcwidth                 0.2.13
-<br>xlrd                    2.0.1</span>
 
 
 #### Java
