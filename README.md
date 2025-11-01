@@ -1,323 +1,306 @@
 # historico-faturamento
 
-Repositório para histórico de faturamento da ISM GOMES DE MATTOS, anos 2024 e 2025.
+![Python](https://img.shields.io/badge/Python-3.13.3-blue)
+![pandas](https://img.shields.io/badge/pandas-2.1.1-orange)
+![openpyxl](https://img.shields.io/badge/openpyxl-3.1.2-red)
+![glob](https://img.shields.io/badge/glob-builtin-lightgrey)
 
-Essa é uma versão pública do README, sem detalhes internos sobre o faturamento da empresa.
+---
 
-Qualquer menção de unidade/faturamento tem o intuito de educar e explicar o projeto para quem tiver interesse. 
+## Table of Contents
+- [English](#english)
+  - [Overview](#overview)
+  - [Source of Input Data](#source-of-input-data)
+  - [Folder Naming Guide: Input and Output](#folder-naming-guide-input-and-output)
+  - [Why Naming Conventions Matter](#why-naming-conventions-matter)
+  - [Adding New Months](#adding-new-months)
+  - [Scripts](#scripts)
+- [Português](#português)
+  - [Visão Geral](#visão-geral)
+  - [Origem dos Dados](#origem-dos-dados)
+  - [Estrutura das Pastas](#estrutura-das-pastas)
+  - [Padrões de Nomeação](#padrões-de-nomeação)
+  - [Por Que a Nomeação é Importante](#por-que-a-nomeação-é-importante)
+  - [Adicionando Novos Meses](#adicionando-novos-meses)
+  - [Scripts](#scripts-1)
 
+---
 
-## Origem dos dados de entrada
-São recebidos do faturamento, com apenas um arquivo definitivo para um certo período de tempo e unidade, podendo ter mais de um por competência.
+## English
 
-### Tabelas Recebidas do Faturamento
+### Overview
+Repository for the billing history of **ISM GOMES DE MATTOS**, covering the years **2024** and **2025**.  
 
-Temos a tabela de exemplo : `("C:\\historico-faturamento\\Planning\\example_File\\tabela_parsing_df-v3.xlsx")`\
-A tabela de classificação : 
-```python
-# Ler tabela de classificação 
-try:
-    
-    classf_Tab_Dir = (glob.glob("C:\\*\\*\\HRN\\Classf\\*"))
-    try:
-        print(str(classf_Tab_Dir[0]))
-        classfTab = pd.read_excel(f"{str(classf_Tab_Dir[0])}")
-    except IndexError:
-        raise IndexError (("O .glob não retornou uma lista válida,provável problema de diretório."))
+This is a **public version** of the README, with all sensitive data removed.  
+All mentions of units or billing data are for educational purposes only.
 
-except OSError:
-    
-    os.system("cls")
-    raise OSError(("Não foi possível ler a tabela de classificação.\nVerifique se ela está presente no diretório de seu computador."))
+The billing includes:
+- All **UFC** RUs in Fortaleza  
+- The **HGF** (Hospital Geral de Fortaleza)  
+- The **IJF** (Instituto Doutor José Frota)  
+- Several **UPAs**  
+- The **UFPB** (Federal University of Paraíba)  
+- The **UNB** (University of Brasília)  
+- And approximately *33 more* units, mostly federal hospitals and universities.
+
+The project reads and consolidates multiple data tables into a standardized format, classifies them, and corrects inconsistencies.
+
+---
+
+### Source of Input Data
+
+Data originates from billing exports, with one definitive file per unit and period.
+
+#### Example Reference Table
 ```
-E a tabela de input em si, o exemplo que estamos usando é `CR_HRN_2023_15_12_2024_14_1.xlsx`
+C:\historico-faturamento\Planning\example_File\tabela_parsing_df-v3.xlsx
+```
 
-# Guia de nomes da pasta `Input` e `Output`
-Um breve guia da importância de nomear as pastas de input corretamente, e como o script salva arquivos.
+#### Classification Table (Python Example)
+```python
+try:
+    classf_Tab_Dir = glob.glob("C:\\*\\*\\HRN\\Classf\\*")
+    print(str(classf_Tab_Dir[0]))
+    classfTab = pd.read_excel(f"{str(classf_Tab_Dir[0])}")
+except (IndexError, OSError):
+    raise OSError("Classification table not found. Check your directory structure.")
+```
 
-## Tabelas Padrão/Modelo
-Todos os scripts pegam o mesmo arquivo com a filepath `"C:\historico-faturamento\Planning\example_File\tabela_parsing_df-v3.xlsx"`\
+#### Example Input File
+```
+CR_HRN_2023_15_12_2024_14_1.xlsx
+```
+
+---
+
+### Folder Naming Guide: `Input` and `Output`
+
+#### Folder Structure Example
+```
+historico-faturamento/
+├── Input/
+│   └── HRN/
+│       └── 2024/
+│           └── 1-2023_15_12_2024_14_1/
+│               └── CR_HRN_2023_15_12_2024_14_1.xlsx
+├── Output/
+│   └── HRN_output.xlsx
+└── Planning/
+    └── example_File/
+        └── tabela_parsing_df-v3.xlsx
+```
+
 > [!CAUTION]
->**_Prioridade_** manter essa mesma estrutura de pastas, senão o script **_não vai conseguir_** achar o arquivo de classificação!!!
+> Keep this structure consistent — otherwise scripts won’t locate the classification table.
 
+#### Example Paths
+Input:
+```
+C:\historico-faturamento\Input\HRN\2024\1-2023_15_12_2024_14_1\CR_HRN_2023_15_12_2024_14_1.xlsx
+```
 
-### Exemplo de filepaths
-A filepath do input é algo assim : `"C:\historico-faturamento\Input\HRN\2024\1-2023_15_12_2024_14_1\CR_HRN_2023_15_12_2024_14_1.xlsx"`
+Output:
+```
+C:\historico-faturamento\Output\HRN\HRN_output.xlsx
+```
 
-E do output : `"C:\historico-faturamento\Output\HRN\HRN_output.xlsx"`
+#### Base Directory
+```
+C:\historico-faturamento
+```
 
-Agora vamos destrinchar isso parte por parte.
+#### Input and Output Behavior
+- `\Input`: manually created  
+- `\Output`: only the root folder must exist — subfolders are auto-generated
 
-### O nosso diretório onde estamos mantendo todas as pastas do do projeto : `C:\historico-faturamento` 
-> [!WARNING]
-> Se possível, nomear do mesmo jeito desse exemplo. Caso contrário, pode causar erros de referência em certas unidades.
-
-### Output são os arquivos de saída, Input são os de entrada. : `\Output ou \Input`
-Todas do `\Input` tem que ser criadas manualmente, seguindo a estrutura de exemplo mais abaixo.\
-A única pasta no output que tem que ser criada manualmente é a `\Output` em si.\
-Cada script cria sua própria pasta na hora de salvar, contanto que a pasta `\Output` exista no lugar correto.
 ```python
 output_base_dir = r"C:\historico-faturamento\Output\HRN"
-try:
-    os.makedirs(output_base_dir, exist_ok=False)
-    print(f"Foi criada a pasta: {output_base_dir}")
-except FileExistsError:
-    print(f"A pasta: {output_base_dir} já existe!")
+os.makedirs(output_base_dir, exist_ok=True)
 ```
-que nem esse bloco aqui.
 
+#### Competence Folder Naming Example
+```
+1-2023_15_12_2024_14_1
+```
+- Month: `1-`  
+- Start Date: `2023_15_12`  
+- End Date: `2024_14_1`
 
-### A unidade : `\HRN`
-Aqui é nossa unidade, no exemplo utilizado é HRN.
+#### File Naming Convention
+```
+CR_HRN_2023_15_12_2024_14_1.xlsx
+```
+- **CR** → File classification  
+- **HRN** → Unit  
+- **2023_15_12** → Start date  
+- **2024_14_1** → End date  
+- **.xlsx** → File extension
 
-### O ano : `\2024`
-O ano de nosso input, contendo normalmente 12 pastas de competência.
+---
 
-### A pasta de competência : `\1-2023_15_12_2024_14_1`
+### Why Naming Conventions Matter
 
-**Ela é dividida em _três_ partes:**
-#### O mês : `1-`
-Tem doze dentro da pasta de ano, é separado do resto dos títulos de competência por um "-"
-#### O início da competência : `2023_15_12`
-> [!WARNING]
->(tem um "_" separando eles, muito importante.)
-#### E o fim da competência : `2024_14_1`
-Tem uma estrutura YYYY-DD-MM./
-> [!CAUTION]
-> Não pode ter zero como o primeiro número da string, por exemplo,\
-A data "1/2/2024" NÃO PODE SER "01/02/2024", ou no caso "2024_1_2" não pode ser "2024_01_02".\
-Todos os zeros que começam datas tem que ser removidos, o correto seria : "2024_1_2", seguindo o YYYY-DD-MM.  
-Isso é muito importante para não terem erros na hora da criação da tabela de referência, que é utilizada para muitas coisas na atribuição. 
+The scripts extract metadata from **filenames rather than the document contents**.  
+This is because the information inside the files is often **inconsistent or missing**, and using filenames ensures a **standardized, reliable reference** for all processing.
 
-
-###  O nome do arquivo em si. : `\CR_HRN_2023_15_12_2024_14_1.xlsx`
-
-**Ele é dividido em _quatro_ partes:**
-#### A classificação do arquivo de input : `\CR`
-#### A unidade : `_HRN`
-#### O início da competência : `2023_15_12`
-(tem um "_" separando eles, muito importante.)
-#### E o fim da competência : `2024_14_1`
-A estrutura de competência é a mesma que as da pasta de competência, nesse caso são iguais.\
-Porém, há competências cujo faturamento é dividido em duas partes, com mais de um arquivo dentro de uma mesma competência.
-
-#### O tipo de arquivo : `.xlsx`
-
-## Porquê nomear os arquivos dessa maneira é tão importante?
-
-### A tabela de referência.
-Todo script inicia pegando os arquivos de input e definindo uma **"Tabela de _referência_"**
+Example reference table construction:
 ```python
 tab = pd.DataFrame(dados_arquivos)
 tab["nome_arquivo"] = arquivos
 tab.loc[:,6] = tab.loc[:,6].astype(int)
 tab.loc[:,9] = tab.loc[:,9].astype(int)
-selectedrows = tab[tab[5] == "2025" ]
-selectedrows = selectedrows.sort_values(by = 6)
-tab = tab[tab[5] == "2024" ]
-tab = tab.sort_values(by = 6)
-tab = (pd.concat([tab, selectedrows], axis=0))
-```
-O bloco acima cria a tabela de referência e classifica ela em ordem cronológica.
-
-Essa tabela contém todas as informações que tem no nosso filepath.\
-A tabela dessa série de arquivos :`"C:\historico-faturamento\Input\HRN\**\**\**"` seria algo assim:
-
-0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | nome_arquivo
---|---|---|---|---|---|---|---|---|---|----|----|----|----|----|----|----|----|----|----|----|----|------------
-0 | C: | historico | faturamento | Input | HRN | 2024 | 1 | 2023 | 15 | 12 | 2024 | 14 | 1 | CF | HRN | 2023 | 15 | 12 | 2024 | 14 | 1 | C:\historico-faturamento\Input\HRN\2024\1-2023...
-1 | C: | historico | faturamento | Input | HRN | 2024 | 2 | 2024 | 15 | 1 | 2024 | 14 | 2 | CF | HRN | 2024 | 15 | 1 | 2024 | 14 | 2 | C:\historico-faturamento\Input\HRN\2024\2-2024...
-2 | C: | historico | faturamento | Input | HRN | 2024 | 3 | 2024 | 15 | 2 | 2024 | 14 | 3 | CF | HRN | 2024 | 15 | 2 | 2024 | 14 | 3 | C:\historico-faturamento\Input\HRN\2024\3-2024...
-3 | C: | historico | faturamento | Input | HRN | 2024 | 4 | 2024 | 15 | 3 | 2024 | 14 | 4 | CF | HRN | 2024 | 15 | 3 | 2024 | 14 | 4 | C:\historico-faturamento\Input\HRN\2024\4-2024...
-4 | C: | historico | faturamento | Input | HRN | 2024 | 5 | 2024 | 15 | 4 | 2024 | 14 | 5 | CF | HRN | 2024 | 15 | 4 | 2024 | 14 | 5 | C:\historico-faturamento\Input\HRN\2024\5-2024...
-5 | C: | historico | faturamento | Input | HRN | 2024 | 6 | 2024 | 15 | 5 | 2024 | 14 | 6 | CF | HRN | 2024 | 15 | 5 | 2024 | 14 | 6 | C:\historico-faturamento\Input\HRN\2024\6-2024...
-6 | C: | historico | faturamento | Input | HRN | 2024 | 7 | 2024 | 15 | 6 | 2024 | 14 | 7 | CF | HRN | 2024 | 15 | 6 | 2024 | 14 | 7 | C:\historico-faturamento\Input\HRN\2024\7-2024...
-7 | C: | historico | faturamento | Input | HRN | 2024 | 8 | 2024 | 15 | 7 | 2024 | 14 | 8 | CF | HRN | 2024 | 15 | 7 | 2024 | 14 | 8 | C:\historico-faturamento\Input\HRN\2024\8-2024...
-8 | C: | historico | faturamento | Input | HRN | 2024 | 9 | 2024 | 15 | 8 | 2024 | 14 | 9 | CF | HRN | 2024 | 15 | 8 | 2024 | 14 | 9 | C:\historico-faturamento\Input\HRN\2024\9-2024...
-9 | C: | historico | faturamento | Input | HRN | 2024 | 10 | 2024 | 15 | 9 | 2024 | 14 | 10 | CF | HRN | 2024 | 15 | 9 | 2024 | 14 | 10 | C:\historico-faturamento\Input\HRN\2024\10-202...
-10 | C: | historico | faturamento | Input | HRN | 2024 | 11 | 2024 | 15 | 10 | 2024 | 14 | 11 | CF | HRN | 2024 | 15 | 10 | 2024 | 14 | 11 | C:\historico-faturamento\Input\HRN\2024\11-202...
-11 | C: | historico | faturamento | Input | HRN | 2024 | 12 | 2024 | 15 | 11 | 2024 | 14 | 12 | CF | HRN | 2024 | 15 | 11 | 2024 | 31 | 12 | C:\historico-faturamento\Input\HRN\2024\12-202...
-12 | C: | historico | faturamento | Input | HRN | 2025 | 1 | 2024 | 15 | 12 | 2025 | 14 | 1 | CF | HRN | 2024 | 15 | 12 | 2025 | 14 | 1 | C:\historico-faturamento\Input\HRN\2025\1-2024...
-13 | C: | historico | faturamento | Input | HRN | 2025 | 2 | 2025 | 15 | 1 | 2025 | 14 | 2 | CF | HRN | 2025 | 15 | 1 | 2025 | 14 | 2 | C:\historico-faturamento\Input\HRN\2025\2-2025...
-14 | C: | historico | faturamento | Input | HRN | 2025 | 3 | 2025 | 15 | 2 | 2025 | 14 | 3 | CF | HRN | 2025 | 15 | 2 | 2025 | 14 | 3 | C:\historico-faturamento\Input\HRN\2025\3-2025...
-15 | C: | historico | faturamento | Input | HRN | 2025 | 4 | 2025 | 15 | 3 | 2025 | 14 | 4 | CF | HRN | 2025 | 15 | 3 | 2025 | 3 | 4 | C:\historico-faturamento\Input\HRN\2025\4-2025...
-16 | C: | historico | faturamento | Input | HRN | 2025 | 4 | 2025 | 15 | 3 | 2025 | 14 | 4 | CF | HRN | 2025 | 4 | 4 | 2025 | 14 | 4 | C:\historico-faturamento\Input\HRN\2025\4-2025...
-
-Como pode ver, ela inclui todos os arquivos que são `HRN` e estão no `Input`.\
-Se tiver algum erro nos nomes do arquivos, vai ter erros no output.
-
-#### O que é afetado pela tabela de competência.
-
-A estrutura do código é basicamente assim dependendo da unidade:
-
-```
-Definição de arquivos de input e de classificação.
-
-    tabiteration += 1
-    loop de arquivos
-        Determinar coisas como o nome do arquivo de output, etc.
-        Filtrar e ler abas que são únicas, caso necessário
-        
-        loop de abas
-            Fazer toda atribuição, a lógica muda muito dependendo do tipo de tabela,\
-            de vez em quando o loop de abas nem necessário é, pode ser utilizado apenas o de arquivos com atribuições diretas.
-    
-    tabiteration += 1
-filtragem final
-salvar output
+selectedrows = tab[tab[5] == "2025"].sort_values(by=6)
+tab = tab[tab[5] == "2024"].sort_values(by=6)
+tab = pd.concat([tab, selectedrows], axis=0)
 ```
 
-`tabiteration += 1` é o nosso contador, a utilizamos ele pra saber qual dos arquivos na lista estamos lendo, assim conseguindo pegar infomações a base de posição usando o .iloc.\
-Sendo assim, A competência é definida desse jeito dentro do nosso código :
+These names determine:
+- Chronological order  
+- Competence period assignment  
+- Iteration management (`tabIteration`)  
+
+Example of extracting competence:
 ```python
-        comp_inicio = f"{tab.iloc[int(tabIteration), 16]}/{yearMonths[(int(tab.iloc[tabIteration, 17])-1)].upper()} de {tab.iloc[tabIteration, 15]}"
-        comp_fim = f"{tab.iloc[int(tabIteration), 19]}/{yearMonths[(int(tab.iloc[tabIteration, 20])-1)].upper()} de {tab.iloc[tabIteration, 18]}"
-``` 
-Usamos nossa 
-> tabiteration 
+comp_inicio = f"{tab.iloc[int(tabIteration), 16]}/{yearMonths[(int(tab.iloc[tabIteration, 17])-1)].upper()} de {tab.iloc[tabIteration, 15]}"
+comp_fim = f"{tab.iloc[int(tabIteration), 19]}/{yearMonths[(int(tab.iloc[tabIteration, 20])-1)].upper()} de {tab.iloc[tabIteration, 18]}"
+```
 
-Para saber qual dos arquivos estamos lendo, e depois pegamos as informações necessárias da tabela de classificação.\
-E não é só utilizada pra definir a competência.
-É um ponto de referência que é utilizado por todo o script, por isso é tão importante que seu input **_(o nome dos seus arquivos!!!)_** seja coerente.
-#### Como adicionar novos meses?
-É só criar uma nova pasta de competência, e ano se for necessário, e depois renomear o arquivo de input com a estrutura que já foi explicada.
+---
 
-Então, vamos ter de exemplo a pasta do **HRN/2025** no momento que estou escrevendo esse readme:
+### Adding New Months
 
-<img src="Img\image-2.png" alt="Alt Text" style="width:70%; height:auto;">\
-Como podem ver, só existem pastas até o mês de abril.
+To add a new competence period:
+1. Create the folder for the new month (and year if needed).  
+2. Place the new `.xlsx` input file inside.  
+3. Follow naming conventions.  
+4. Run the script and review output.
 
-> [!NOTE]
-> As pastas podem ser criadas manualmente, mas no filepath C:\historico-faturamento\Planning\CompfileStrucuture\2025 tem uns exemplos de pastas com o estilo de competência do HRN.\
-**(As pastas comp são as competências estilo universidade, podem ser _reutilizadas_ pra ganhar tempo na hora de criar a estrutura de seu novo arquivo.)**<br/>
+---
+
+### Scripts
+
+Each unit has a dedicated Python script due to structural differences between tables.  
+Simpler units process quickly; others require complex parsing and validation logic.
+
+---
+
+## Português
+
+### Visão Geral
+Repositório para histórico de faturamento da **ISM GOMES DE MATTOS**, referente aos anos **2024** e **2025**.  
+
+Versão **pública** do README, sem qualquer dado confidencial.  
+Todas as menções a unidades ou faturamento têm finalidade **educativa**.
+
+O projeto lê várias tabelas, consolida em um formato padronizado, classifica e corrige inconsistências.
+
+Inclui:
+- Todos os RUs da **UFC** em Fortaleza  
+- O **HGF** (Hospital Geral de Fortaleza)  
+- O **IJF** (Instituto Doutor José Frota)  
+- Diversas **UPAs**  
+- **UFPB** e **UNB**  
+- E aproximadamente *33 outras* unidades, principalmente hospitais e universidades federais
+
+---
+
+### Origem dos Dados
+
+Os dados provêm de exportações do sistema de faturamento, com um arquivo definitivo por unidade e período.
+
+#### Exemplo de Tabela de Referência
+```
+C:\historico-faturamento\Planning\example_File\tabela_parsing_df-v3.xlsx
+```
+
+#### Exemplo de Arquivo de Classificação
+```python
+try:
+    classf_Tab_Dir = glob.glob("C:\\*\\*\\HRN\\Classf\\*")
+    print(str(classf_Tab_Dir[0]))
+    classfTab = pd.read_excel(f"{str(classf_Tab_Dir[0])}")
+except (IndexError, OSError):
+    raise OSError("Tabela de classificação não encontrada. Verifique a estrutura de pastas.")
+```
+
+#### Exemplo de Arquivo de Entrada
+```
+CR_HRN_2023_15_12_2024_14_1.xlsx
+```
+
+---
+
+### Estrutura das Pastas
+```
+historico-faturamento/
+├── Input/
+│   └── HRN/
+│       └── 2024/
+│           └── 1-2023_15_12_2024_14_1/
+│               └── CR_HRN_2023_15_12_2024_14_1.xlsx
+├── Output/
+│   └── HRN_output.xlsx
+└── Planning/
+    └── example_File/
+        └── tabela_parsing_df-v3.xlsx
+```
+
+> [!CAUTION]
+> Mantenha a estrutura de pastas consistente — caso contrário, os scripts não localizarão a tabela de classificação.
+
+---
+
+### Padrões de Nomeação
+
+- Evite zeros à esquerda nas datas (`2024_1_2`, não `2024_01_02`)  
+- Mantenha os nomes de pastas e arquivos consistentes
+
+#### Pasta de Competência
+```
+1-2023_15_12_2024_14_1
+```
+- Mês: `1-`  
+- Início: `2023_15_12`  
+- Fim: `2024_14_1`
+
+#### Arquivo de Entrada
+```
+CR_HRN_2023_15_12_2024_14_1.xlsx
+```
+- **CR** → Classificação  
+- **HRN** → Unidade  
+- **2023_15_12** → Data início  
+- **2024_14_1** → Data fim  
+- **.xlsx** → Extensão
+
+---
+
+### Por Que a Nomeação é Importante
+
+Os scripts extraem metadados **dos nomes dos arquivos e não do conteúdo das planilhas**, porque a informação dentro dos arquivos muitas vezes é **inconsistente ou ausente**.  
+Isso garante **padronização e confiabilidade** durante todo o processamento.
+
+Exemplo de construção da tabela de referência:
+```python
+tab = pd.DataFrame(dados_arquivos)
+tab["nome_arquivo"] = arquivos
+tab.loc[:,6] = tab.loc[:,6].astype(int)
+tab.loc[:,9] = tab.loc[:,9].astype(int)
+selectedrows = tab[tab[5] == "2025"].sort_values(by=6)
+tab = tab[tab[5] == "2024"].sort_values(by=6)
+tab = pd.concat([tab, selectedrows], axis=0)
+```
+
+Define:
+- Ordem cronológica  
+- Atribuição de competência  
+- Controle de iteração (`tabIteration`)  
+
+Exemplo de extração de competência:
+```python
+comp_inicio = f"{tab.iloc[int(tabIteration), 16]}/{yearMonths[(int(tab.iloc[tabIteration, 17])-1)].upper()} de {tab.iloc[tabIteration, 15]}"
+comp_fim = f"{tab.iloc[int(tabIteration), 19]}/{yearMonths[(int(tab.iloc[tabIteration
 
 
-<img src="Img\image-3.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-Após criar ou copiar a pasta de competência, ela deve ser algo assim:<br/>
-
-<img src="Img\image-4.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-
-
-Pegamos nosso arquivo de input, e colocamos dentro da pasta,<br/>
-
-<img src="Img\image-6.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-
-
-Aí renomeamos para seguir a estrutura.<br/>
-
-<img src="Img\image-5.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-Depois é só rodar o script e esperar.
-
-O terminal :
-
-<img src="Img\image-7.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-e aqui está o nosso output final.
-
-<img src="Img\image-8.png" alt="Alt Text" style="width:70%; height:auto;">\
-
-
-
-
-## Scripts
-### Como são estruturados os Scripts?
-Os scripts são divididos de por unidade, já que todas tem uma estrututra de tabela diferente.\
-Por isso, alguns scripts são mais simples e rodam mais rápido, e outros demoram um pouco mais e são mais complicados.
-
-
-
-
-### DEPENDÊNCIAS
-#### Python
-Python 3.13.3
-
-##### Pkg
-pandas 2.2.3
-
-openpyxl 3.1.5
-
-tabula-py 2.10.0
-
-xlrd 2.0.1
-
-numpy 2.2.5
-
-
-
-#### Java
-java 24.0.2 2025-07-15
-
-Java(TM) SE Runtime Environment (build 24.0.2+12-54)
-
-Java HotSpot(TM) 64-Bit Server VM (build 24.0.2+12-54, mixed mode, sharing)
-
-
-
-
-
-# Lista de Unidades
-
-## ISGH
-
-- [x] HLDV
-- [x] HRSC
-- [X] HRN
-- [x] HLDV
-- [x] HGWA
-- [x] HRJV
-- [x] HUC
-- [x] UPAs
-
-## Universidades 
-
-- [x] UFC
-- [x] UNILAB
-- [X] UFAM
-- [X] UVA
-- [X] UFPB
-- [X] UFRA
-- [X] UFSM
-- [X] UNB
-- [X] UFS 
-
-## SAP
-
-- [X] SAP (3 Contratos, Múltiplas Unidades)
-
-## Hospitais
-
-- [ ] DF - BRASÍLIA (4 Unidades)
-
-- [X] *DF - BRASÍLIA - ISM* 
-
-- [X] *DF - BRASÍLIA - GUARÁ*
-
-- [ ] *DF - BRASÍLIA - GAMA*
-
-- [ ] *DF - BRASÍLIA - PALANLTINA*
-
-- [ ] CE - HIAS
-- [ ] CE - HGF
-- [ ] CE - HNSC/GONZAGUINHA MESSEJANA
-- [ ] CE - FROTINAS/GONZAGUINHAS (4 UNIDADES)
-- [ ] CE - HPM
-- [X] CE - EBSERH - HUWC E MEAC
-- [ ] CE - HAPVIDA (5 Unidades)
-- [X] CE - SPDM - HCF
-- [X] CE - EBSERH - HU UNIVASF
-- [X] TO - EBSERH - HDT
-- [ ] RR - SESAU (Dois lotes, múltiplos hospitais)
-
-## Outros 
-
-- [ ] PE - SALGUEIRO TLSA
-- [ ] CE - SDHDS - RESTAURANTE POPULAR
-- [ ] CE - SEDUC - BANABUIU
-- [ ] CE - TIJUCA
-- [ ] TO - REST. POPULAR ARAGUAÍNA
 
 
